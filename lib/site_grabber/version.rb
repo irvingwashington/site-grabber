@@ -1,0 +1,3 @@
+module SiteGrabber
+  VERSION = "0.0.1"
+end
