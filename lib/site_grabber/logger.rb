@@ -6,16 +6,24 @@ module SiteGrabber::Logger
   end
 
   def debug_log(&block)
-    return unless debug
+    return unless debug?
     log_message = "[IloopReporting:DEBUG] #{block.call}"
     logger.info(log_message) if logger
+  end
+  
+  def error(message)
+    log(:error, message)
+  end
+  
+  def info(message)
+    log(:info, message)
   end
   
   def logger
     SiteGrabber.config.logger
   end
-        
-  def debug
+
+  def debug?
     SiteGrabber.config.debug
   end
 end

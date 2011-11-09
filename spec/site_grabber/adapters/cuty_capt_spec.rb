@@ -25,14 +25,13 @@ describe SiteGrabber::Adapters::CutyCapt do
     end
 
     it "returns true" do
-      Open3.stub!(:popen3).and_return(mocked_streams)
+      Open3.stub!(:popen3).and_yield(*mocked_streams)
       adapter = klass.new({:cuty_capt_path => true, :xvfb_path => true})
       adapter.render.should be_true
     end
     
     it "returns false" do
-      Open3.stub!(:popen3).and_return(mocked_streams)
-      $?.stub!('to_i').and_return(1) # XXX
+      Open3.stub!(:popen3).and_yield(*mocked_streams(1))
       adapter = klass.new({:cuty_capt_path => true, :xvfb_path => true})
       adapter.render.should_not be_true
     end
@@ -44,10 +43,13 @@ describe SiteGrabber::Adapters::CutyCapt do
     SiteGrabber::Adapters::CutyCapt
   end
   
-  def mocked_streams
-    [:stdin,:stdout,:stderr].map do |stream|
-      s = mock('stream')
+  def mocked_streams(value=0)
+    [:stdin,:stdout,:stderr, :wait_thr].map do |stream|
+      s = mock(stream)
       s.stub!('any?').and_return(false)
+      if stream == :wait_thr
+        s.stub!(:value).and_return(value)
+      end
       s
     end
   end

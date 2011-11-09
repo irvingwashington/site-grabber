@@ -3,7 +3,7 @@ require "open3"
 class SiteGrabber::Adapters::CutyCapt
   include SiteGrabber::Logger
   
-  DEFAULT_SERVER_OPTIONS = "-screen 0 640x480x16"
+  DEFAULT_SERVER_OPTIONS = '"-screen 0 640x480x16"'
   DEFAULT_QUALITY = 30
   
   attr_accessor :url, :file_path, :quality
@@ -17,16 +17,22 @@ class SiteGrabber::Adapters::CutyCapt
   rescue SystemCallError => msg
     error msg
   end
-
+  
+  def quality
+    @quality || DEFAULT_QUALITY
+  end
+  
   protected
 
   def execute
     cmd = shell_command
-    debug { "Invoking #{cmd}" }
-    stdin, stdout, stderr = Open3.popen3(cmd)
-    exit_status = $?.to_i
-    debug { "Exit status #{exit_status}" }
-    stderr.lines { |l| error l } if stderr.any?
+    exit_status = nil
+    debug_log { "Invoking #{cmd}" }
+    Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+      exit_status = wait_thr.value
+      debug_log { "Exit status #{exit_status}" }
+      stderr.lines { |l| error l } if stderr.any?    
+    end
     exit_status.eql?(0)
   end
   
@@ -40,17 +46,19 @@ class SiteGrabber::Adapters::CutyCapt
     @settings[:server_options] || DEFAULT_SERVER_OPTIONS
   end
   
-  def quality
-    @quality || DEFAULT_QUALITY
-  end
-  
   def cuty_capt_path
-    raise ArgumentError, "No :cuty_capt_path setting" unless @settings.has_key?(:cuty_capt_path)
-    @settings[:cuty_capt_path]
+    @settings[:cuty_capt_path] ||= locate_binary_file('CutyCapt')
+    raise ArgumentError, ":cuty_capt_path setting required" unless @settings[:cuty_capt_path]
   end
   
   def xvfb_path
-    raise ArgumentError, "No :xvfb_path setting" unless @settings.has_key?(:xvfb_path)
-    @settings[:xvfb_path]
+    @settings[:xvfb_path] ||= locate_binary_file('xvfb-run')
+    raise ArgumentError, ":xvfb_path setting required" unless @settings[:xvfb_path]
   end  
+  
+  def locate_binary_file(name)
+    path = `which #{name}`.chop
+    path == '' ? nil : path
+  end
+
 end
