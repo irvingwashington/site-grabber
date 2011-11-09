@@ -1,7 +1,7 @@
 module SiteGrabber::Logger
   def log(severity, message)
     log_message = "[SiteGrabber:#{severity}] #{message}"
-    puts log_message if debug
+    puts log_message if debug?
     logger.send(severity, log_message) if logger
   end
 
