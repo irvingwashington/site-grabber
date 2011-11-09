@@ -6,6 +6,9 @@ class SiteGrabber::Adapters::CutyCapt
   DEFAULT_SERVER_OPTIONS = '"-screen 0 640x480x16"'
   DEFAULT_QUALITY = 30
   
+  DEFAULT_CUTY_CAPT_FILE_NAME = 'CutyCapt'
+  DEFAULT_XVFB_FILE_NAME = 'xfvb-run'
+  
   attr_accessor :url, :file_path, :quality
   
   def initialize(settings) 
@@ -47,13 +50,15 @@ class SiteGrabber::Adapters::CutyCapt
   end
   
   def cuty_capt_path
-    @settings[:cuty_capt_path] ||= locate_binary_file('CutyCapt')
+    @settings[:cuty_capt_path] ||= locate_binary_file(DEFAULT_CUTY_CAPT_FILE_NAME)
     raise ArgumentError, ":cuty_capt_path setting required" unless @settings[:cuty_capt_path]
+    @settings[:cuty_capt_path]
   end
   
   def xvfb_path
-    @settings[:xvfb_path] ||= locate_binary_file('xvfb-run')
+    @settings[:xvfb_path] ||= locate_binary_file(DEFAULT_XVFB_FILE_NAME)
     raise ArgumentError, ":xvfb_path setting required" unless @settings[:xvfb_path]
+    @settings[:xvfb_path]
   end  
   
   def locate_binary_file(name)
