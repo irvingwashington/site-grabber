@@ -32,7 +32,7 @@ class SiteGrabber::Adapters::CutyCapt
     exit_status = nil
     debug_log { "Invoking #{cmd}" }
     Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
-      exit_status = wait_thr.value
+      exit_status = wait_thr.value.to_i
       debug_log { "Exit status #{exit_status}" }
       stderr.lines { |l| error l } if stderr.any?    
     end
