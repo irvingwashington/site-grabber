@@ -1,6 +1,6 @@
 require "open3"
 
-class SiteGrabber::Adapters::CutyCapt
+class SiteGrabber::Grabbers::CutyCapt
   include SiteGrabber::Logger
   
   DEFAULT_SERVER_OPTIONS = '"-screen 0 640x480x16"'
@@ -8,7 +8,7 @@ class SiteGrabber::Adapters::CutyCapt
   
   DEFAULT_CUTY_CAPT_FILE_NAME = 'CutyCapt'
   DEFAULT_XVFB_FILE_NAME = 'xfvb-run'
-  
+ 
   attr_accessor :url, :file_path, :quality
   
   def initialize(settings) 
